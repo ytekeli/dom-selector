@@ -1,0 +1,4 @@
+products:
+  css: 'div.products a'
+  multiple: True
+  format: Text
