@@ -5,6 +5,9 @@ php:
   - 7.3
   - 7.4
 
+before_script:
+  - sudo pecl install yaml
+
 install:
   - composer self-update
   - composer install --dev --no-interaction
