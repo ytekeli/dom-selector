@@ -1,0 +1,8 @@
+/.gitignore          export-ignore
+/.php_cs.dist        export-ignore
+/CHANGELOG.md        export-ignore
+/LICENSE.md          export-ignore
+/phpunit.php         export-ignore
+/phpunit.xml         export-ignore
+/tests               export-ignore
+/tests               linguist-documentation
