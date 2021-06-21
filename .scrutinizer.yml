@@ -21,12 +21,6 @@ build:
           format: 'clover'
 
   nodes:
-    php72:
-      environment:
-        php: 7.2
-    php73:
-      environment:
-        php: 7.3
     php74:
       environment:
         php: 7.4
