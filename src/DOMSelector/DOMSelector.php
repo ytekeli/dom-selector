@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace DOMSelector;
 
 /**
- * Class DOMSelector
- * @package DOMSelector
+ * Class DOMSelector.
  */
 class DOMSelector
 {
@@ -22,6 +21,7 @@ class DOMSelector
 
     /**
      * DOMSelector constructor.
+     *
      * @param $config
      * @param array $formatters
      */
@@ -30,42 +30,31 @@ class DOMSelector
         $this->config = $config;
 
         if ($formatters) {
-            //
         }
     }
 
     /**
-     * Create Extractor object from yaml string
-     *
-     * @param string $yaml_string
-     * @param array $formatters
-     * @return DOMSelector
+     * Create Extractor object from yaml string.
      */
     public static function fromYamlString(string $yaml_string, array $formatters = []): DOMSelector
     {
-        $config = yaml_parse($yaml_string);
+        $config = \yaml_parse($yaml_string);
 
         return new static($config, $formatters);
     }
 
     /**
-     * Create Extractor object from yaml file
-     *
-     * @param string $yaml_file
-     * @param array $formatters
-     * @return DOMSelector
+     * Create Extractor object from yaml file.
      */
     public static function fromYamlFile(string $yaml_file, array $formatters = []): DOMSelector
     {
-        $config = yaml_parse_file($yaml_file);
+        $config = \yaml_parse_file($yaml_file);
 
         return new static($config, $formatters);
     }
 
     /**
-     * Get config
-     *
-     * @return array
+     * Get config.
      */
     public function getConfig(): array
     {
