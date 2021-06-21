@@ -34,6 +34,10 @@ tools:
     enabled: true
     excluded_dirs: [vendor, test]
 build:
+  environment:
+    php:
+      pecl_extensions:
+        - yaml
   nodes:
     analysis:
       tests:
