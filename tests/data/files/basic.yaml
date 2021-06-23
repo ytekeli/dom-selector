@@ -1,0 +1,19 @@
+title:
+  css: 'title'
+  type: Text
+link:
+  css: 'ul.pagination a'
+  type: Link
+content:
+  css: 'ul.pagination li'
+  type: Html
+text_exclude_html:
+  css: 'ul.pagination'
+  type: Text
+attribute:
+  css: 'meta[name="viewport"]'
+  type: Attribute
+  attribute: content
+image:
+  css: 'div.container img'
+  type: Image
