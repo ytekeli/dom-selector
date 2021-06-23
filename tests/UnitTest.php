@@ -108,4 +108,44 @@ class UnitTest extends TestCase
 
         $this->assertEquals('Click Here!', $selector['content']);
     }
+
+    public function testGetChildItem()
+    {
+        $yaml_string = '
+        items:
+            css: "div.items"
+            type: Text
+            children:
+                name:
+                    css: "p"
+                    type: Text
+                value:
+                    css: "span"
+                    type: Text';
+
+        $selector = DOMSelector::fromYamlString($yaml_string)->extract('<div class="items"><p>key</p><span>value</span></div>');
+
+        $this->assertEquals([
+            'items' => [
+                'name' => 'key',
+                'value' => 'value',
+            ]
+        ], $selector);
+    }
+
+    public function testMultiple()
+    {
+        $yaml_string = '
+        items:
+            css: "ul.items li"
+            multiple: True';
+
+        $selector = DOMSelector::fromYamlString($yaml_string)->extract('<ul class="items"><li>One</li><li>Two</li><li>Three</li></ul>');
+
+        $this->assertEquals([
+            'items' => [
+                'One', 'Two', 'Three'
+            ]
+        ], $selector);
+    }
 }

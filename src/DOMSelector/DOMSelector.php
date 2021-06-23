@@ -89,7 +89,7 @@ class DOMSelector
      * @param Dom $dom
      * @return array|string
      */
-    public function extractSelector(array $field_config, Dom $dom)
+    public function extractSelector(array $field_config, $dom)
     {
         $elements = [];
 
@@ -111,12 +111,13 @@ class DOMSelector
 
         foreach ($elements as $element) {
             if (isset($field_config['children'])) {
-                $value = ''; # TODO
+                $value = $this->getChildItem($field_config, $element);
             } else {
                 $value = $this->extractField($element, $item_type, $field_config['attribute'] ?? false);
             }
 
             if (isset($field_config['multiple']) && $field_config['multiple'] === true) {
+                $values[] = $value;
             } else {
                 return $value;
             }
@@ -150,5 +151,25 @@ class DOMSelector
         }
 
         return $content;
+    }
+
+    /**
+     * Get child item
+     *
+     * @param $field_config
+     * @param $element
+     * @return array
+     */
+    public function getChildItem($field_config, $element): array
+    {
+        $child_config = $field_config['children'];
+        $child_item = [];
+
+        foreach ($child_config as $config_name => $config_fields) {
+            $child_value = $this->extractSelector($config_fields, $element);
+            $child_item[$config_name] = $child_value;
+        }
+
+        return $child_item;
     }
 }
