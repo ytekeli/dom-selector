@@ -2,8 +2,9 @@ language: php
 
 php:
   - 7.2
-  - 7.3.24
+  - 7.3
   - 7.4
+  - 8.0
 
 install:
   - printf "\n" | pecl install yaml
@@ -17,5 +18,3 @@ script:
 
 after_success:
   - travis_retry php vendor/bin/php-coveralls -v
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
