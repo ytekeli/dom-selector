@@ -1,6 +1,6 @@
 {
   "name": "ytekeli/dom-selector",
-  "description": "A simple hello world composer package",
+  "description": "An HTML DOM selector and extractor with using YAML config.",
   "type": "library",
   "license": "MIT",
   "authors": [
