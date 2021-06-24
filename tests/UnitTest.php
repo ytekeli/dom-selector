@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use DOMSelector\DOMSelector;
+use DOMSelector\Formatters\Decimal;
+use DOMSelector\Formatters\Integer;
 use PHPUnit\Framework\TestCase;
 
 class UnitTest extends TestCase
@@ -28,7 +30,50 @@ class UnitTest extends TestCase
         $selector = DOMSelector::fromYamlString($yaml_string)->extract('<img src="photo.jpg" width="80" height="80" />');
 
         $this->assertEquals(80, $selector['img']);
+    }
 
+    public function testAttributeWithSingleFormatter()
+    {
+        $yaml_string = '
+        width:
+            css: "img"
+            type: Attribute
+            attribute: width
+            format: 
+                - Integer';
+
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer])->extract('<img src="photo.jpg" width="200" height="200" />');
+
+        $this->assertSame('integer', gettype($selector['width']));
+        $this->assertSame(1000, $selector['width'] * 5);
+    }
+
+    public function testAttributeWithMultipleFormat()
+    {
+        $yaml_string = '
+        width:
+            css: "img"
+            type: Attribute
+            attribute: width
+            format: 
+                - Integer
+                - Decimal
+        height:
+            css: "img"
+            type: Attribute
+            attribute: height
+            format: 
+                - Decimal
+                - Integer';
+
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer, new Decimal])->extract('<img src="photo.jpg" width="200" height="200" />');
+
+        $this->assertSame('double', gettype($selector['width']));
+        $this->assertSame(200.00, $selector['width']);
+        $this->assertSame('integer', gettype($selector['height']));
+        $this->assertSame(200, $selector['height']);
+        $this->assertEquals($selector['width'], $selector['height']);
+        $this->assertNotSame($selector['width'], $selector['height']);
     }
 
     public function testTypeHtml()
@@ -147,5 +192,87 @@ class UnitTest extends TestCase
                 'One', 'Two', 'Three'
             ]
         ], $selector);
+    }
+
+    public function testMultipleWithChildren()
+    {
+        $yaml_string = '
+        items:
+            css: "ul li"
+            multiple: True
+            children:
+                firstname:
+                    css: ".key"
+                    type: Text
+                lastname:
+                    css: ".value"
+                    type: Text';
+
+        $html = '
+        <ul>
+            <li><p class="key">John</p><p class="value">Doe</p></li>
+            <li><p class="key">Jane</p><p class="value">Doe</p></li>
+        </ul>';
+
+        $selector = DOMSelector::fromYamlString($yaml_string)->extract($html);
+
+        $this->assertEquals([
+            'items' => [
+                0 => [
+                    'firstname' => 'John',
+                    'lastname' => 'Doe',
+                ],
+                1 => [
+                    'firstname' => 'Jane',
+                    'lastname' => 'Doe',
+                ],
+            ]
+        ], $selector);
+    }
+
+    public function testInitializingFormatter()
+    {
+        $yaml_string = '
+        test:
+            css: "h1"
+            type: Text';
+
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer]);
+
+        $this->assertEquals(['Integer' => new Integer], $selector->getFormatters());
+        $this->assertEquals('Integer', $selector->getFormatter('Integer')->getName());
+    }
+
+    public function testFormatterSingle()
+    {
+        $yaml_string = '
+        string:
+            css: "p"
+            type: Text
+        integer:
+            css: "p"
+            type: Text
+            format: Integer';
+
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer])->extract('<p>1</p>');
+
+        $this->assertEquals('string', gettype($selector['string']));
+        $this->assertEquals('integer', gettype($selector['integer']));
+    }
+
+    public function testFormatterMultiple()
+    {
+        $yaml_string = '
+        decimal:
+            css: "p"
+            type: Text
+            format: 
+                - Integer
+                - Decimal';
+
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer, new Decimal])->extract('<p>1</p>');
+
+        $this->assertSame(1.00, $selector['decimal']);
+        $this->assertSame('double', gettype($selector['decimal']));
     }
 }

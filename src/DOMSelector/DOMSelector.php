@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DOMSelector;
 
+use DOMSelector\Contracts\FormatterInterface;
 use PHPHtmlParser\Dom;
 
 /**
@@ -17,6 +18,11 @@ class DOMSelector
     private $config = [];
 
     /**
+     * @var array
+     */
+    private $formatters = [];
+
+    /**
      * DOMSelector constructor.
      *
      * @param $config
@@ -27,6 +33,11 @@ class DOMSelector
         $this->config = $config;
 
         if ($formatters) {
+            foreach ($formatters as $formatter) {
+                if ($formatter instanceof FormatterInterface) {
+                    $this->formatters[$formatter->getName()] = $formatter;
+                }
+            }
         }
     }
 
@@ -61,6 +72,27 @@ class DOMSelector
     }
 
     /**
+     * Get all formatters
+     *
+     * @return array
+     */
+    public function getFormatters(): array
+    {
+        return $this->formatters;
+    }
+
+    /**
+     * Get specific formatter
+     *
+     * @param string $formatter
+     * @return false|mixed|FormatterInterface
+     */
+    public function getFormatter(string $formatter)
+    {
+        return $this->formatters[$formatter] ?? false;
+    }
+
+    /**
      * Extract config items from HTML
      *
      * @param string $html
@@ -86,7 +118,7 @@ class DOMSelector
      * Extract selector
      *
      * @param array $field_config
-     * @param Dom $dom
+     * @param Dom|mixed $dom
      * @return array|string
      */
     public function extractSelector(array $field_config, $dom)
@@ -113,7 +145,21 @@ class DOMSelector
             if (isset($field_config['children'])) {
                 $value = $this->getChildItem($field_config, $element);
             } else {
-                $value = $this->extractField($element, $item_type, $field_config['attribute'] ?? false);
+                $formatters = [];
+
+                if (isset($field_config['format'])) {
+                    if (!is_array($field_config['format'])) {
+                        $field_config['format'] = [$field_config['format']];
+                    }
+
+                    foreach ($field_config['format'] as $f) {
+                        if ($formatter = $this->getFormatter($f)) {
+                            $formatters[$f] = $formatter;
+                        }
+                    }
+                }
+
+                $value = $this->extractField($element, $item_type, $field_config['attribute'] ?? false, $formatters);
             }
 
             if (isset($field_config['multiple']) && $field_config['multiple'] === true) {
@@ -134,7 +180,7 @@ class DOMSelector
      * @param mixed $attribute
      * @return false|mixed|string
      */
-    public function extractField($element, $item_type, $attribute = false)
+    public function extractField($element, $item_type, $attribute = false, array $formatters = [])
     {
         $content = false;
 
@@ -148,6 +194,13 @@ class DOMSelector
             $content = $element->getAttribute('href');
         } elseif ($item_type == 'Text') {
             $content = trim(strip_tags($element->innerHtml));
+        }
+
+        if ($formatters) {
+            /** @var FormatterInterface $formatter */
+            foreach ($formatters as $formatter) {
+                $content = $formatter->format($content);
+            }
         }
 
         return $content;
