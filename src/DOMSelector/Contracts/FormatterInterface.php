@@ -3,21 +3,21 @@
 namespace DOMSelector\Contracts;
 
 /**
- * Interface FormatterInterface
- * @package DOMSelector\Contracts
+ * Interface FormatterInterface.
  */
 interface FormatterInterface
 {
     /**
-     * Text formatting
+     * Text formatting.
      *
      * @param mixed $value
+     *
      * @return mixed
      */
     public function format($value);
 
     /**
-     * Get formatter name
+     * Get formatter name.
      *
      * @return mixed
      */

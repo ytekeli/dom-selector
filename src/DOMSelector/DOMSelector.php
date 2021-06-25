@@ -62,7 +62,7 @@ class DOMSelector
     }
 
     /**
-     * Get config
+     * Get config.
      *
      * @return array
      */
@@ -72,7 +72,7 @@ class DOMSelector
     }
 
     /**
-     * Get all formatters
+     * Get all formatters.
      *
      * @return array
      */
@@ -82,9 +82,10 @@ class DOMSelector
     }
 
     /**
-     * Get specific formatter
+     * Get specific formatter.
      *
      * @param string $formatter
+     *
      * @return false|mixed|FormatterInterface
      */
     public function getFormatter(string $formatter)
@@ -93,11 +94,13 @@ class DOMSelector
     }
 
     /**
-     * Extract config items from HTML
+     * Extract config items from HTML.
      *
      * @param string $html
-     * @return array
+     *
      * @throws
+     *
+     * @return array
      */
     public function extract(string $html): array
     {
@@ -115,10 +118,11 @@ class DOMSelector
     }
 
     /**
-     * Extract selector
+     * Extract selector.
      *
-     * @param array $field_config
+     * @param array     $field_config
      * @param Dom|mixed $dom
+     *
      * @return array|string
      */
     public function extractSelector(array $field_config, $dom)
@@ -127,7 +131,8 @@ class DOMSelector
 
         try {
             $elements = $dom->find($field_config['css']);
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         if (count($elements) < 1) {
             return false;
@@ -173,11 +178,12 @@ class DOMSelector
     }
 
     /**
-     * Extract field
+     * Extract field.
      *
      * @param $element
      * @param $item_type
      * @param mixed $attribute
+     *
      * @return false|mixed|string
      */
     public function extractField($element, $item_type, $attribute = false, array $formatters = [])
@@ -188,7 +194,7 @@ class DOMSelector
             $content = $element->getAttribute($attribute);
         } elseif ($item_type == 'Html') {
             $content = $element->innerHtml;
-        }  elseif ($item_type == 'Image') {
+        } elseif ($item_type == 'Image') {
             $content = $element->getAttribute('src');
         } elseif ($item_type == 'Link') {
             $content = $element->getAttribute('href');
@@ -207,10 +213,11 @@ class DOMSelector
     }
 
     /**
-     * Get child item
+     * Get child item.
      *
      * @param $field_config
      * @param $element
+     *
      * @return array
      */
     public function getChildItem($field_config, $element): array

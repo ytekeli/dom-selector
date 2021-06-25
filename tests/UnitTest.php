@@ -13,7 +13,7 @@ class UnitTest extends TestCase
     {
         $selector1 = DOMSelector::fromYamlString(file_get_contents('tests/data/files/basic.yaml'));
         $selector2 = DOMSelector::fromYamlFile('tests/data/files/basic.yaml');
-        
+
         $this->assertInstanceOf(DOMSelector::class, $selector1);
         $this->assertInstanceOf(DOMSelector::class, $selector2);
         $this->assertSame($selector1->getConfig(), $selector2->getConfig());
@@ -42,7 +42,7 @@ class UnitTest extends TestCase
             format: 
                 - Integer';
 
-        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer])->extract('<img src="photo.jpg" width="200" height="200" />');
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer()])->extract('<img src="photo.jpg" width="200" height="200" />');
 
         $this->assertSame('integer', gettype($selector['width']));
         $this->assertSame(1000, $selector['width'] * 5);
@@ -66,7 +66,7 @@ class UnitTest extends TestCase
                 - Decimal
                 - Integer';
 
-        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer, new Decimal])->extract('<img src="photo.jpg" width="200" height="200" />');
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer(), new Decimal()])->extract('<img src="photo.jpg" width="200" height="200" />');
 
         $this->assertSame('double', gettype($selector['width']));
         $this->assertSame(200.00, $selector['width']);
@@ -172,9 +172,9 @@ class UnitTest extends TestCase
 
         $this->assertEquals([
             'items' => [
-                'name' => 'key',
+                'name'  => 'key',
                 'value' => 'value',
-            ]
+            ],
         ], $selector);
     }
 
@@ -189,8 +189,8 @@ class UnitTest extends TestCase
 
         $this->assertEquals([
             'items' => [
-                'One', 'Two', 'Three'
-            ]
+                'One', 'Two', 'Three',
+            ],
         ], $selector);
     }
 
@@ -220,13 +220,13 @@ class UnitTest extends TestCase
             'items' => [
                 0 => [
                     'firstname' => 'John',
-                    'lastname' => 'Doe',
+                    'lastname'  => 'Doe',
                 ],
                 1 => [
                     'firstname' => 'Jane',
-                    'lastname' => 'Doe',
+                    'lastname'  => 'Doe',
                 ],
-            ]
+            ],
         ], $selector);
     }
 
@@ -237,9 +237,9 @@ class UnitTest extends TestCase
             css: "h1"
             type: Text';
 
-        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer]);
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer()]);
 
-        $this->assertEquals(['Integer' => new Integer], $selector->getFormatters());
+        $this->assertEquals(['Integer' => new Integer()], $selector->getFormatters());
         $this->assertEquals('Integer', $selector->getFormatter('Integer')->getName());
     }
 
@@ -254,7 +254,7 @@ class UnitTest extends TestCase
             type: Text
             format: Integer';
 
-        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer])->extract('<p>1</p>');
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer()])->extract('<p>1</p>');
 
         $this->assertEquals('string', gettype($selector['string']));
         $this->assertEquals('integer', gettype($selector['integer']));
@@ -270,7 +270,7 @@ class UnitTest extends TestCase
                 - Integer
                 - Decimal';
 
-        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer, new Decimal])->extract('<p>1</p>');
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer(), new Decimal()])->extract('<p>1</p>');
 
         $this->assertSame(1.00, $selector['decimal']);
         $this->assertSame('double', gettype($selector['decimal']));
