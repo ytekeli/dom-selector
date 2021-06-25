@@ -102,12 +102,7 @@ class DOMSelector
     public function extract(string $html): array
     {
         $dom = new Dom();
-
-        try {
-            $dom->loadStr($html);
-        } catch (Exception $exception) {
-            return [];
-        }
+        $dom->loadStr($html);
 
         $fields_data = [];
 
@@ -207,10 +202,9 @@ class DOMSelector
                 $content = $element->getAttribute('href');
                 break;
             case 'Text':
+            default:
                 $content = trim(strip_tags($element->innerHtml));
                 break;
-            default:
-                $content = false;
         }
 
         if (!empty($formatters) && $content) {
