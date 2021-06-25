@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Tests;
+
 use DOMSelector\DOMSelector;
 use DOMSelector\Formatters\Decimal;
 use DOMSelector\Formatters\Integer;
@@ -27,7 +29,8 @@ class UnitTest extends TestCase
             type: Attribute
             attribute: width';
 
-        $selector = DOMSelector::fromYamlString($yaml_string)->extract('<img src="photo.jpg" width="80" height="80" />');
+        $selector = DOMSelector::fromYamlString($yaml_string)
+            ->extract('<img src="photo.jpg" width="80" height="80" />');
 
         $this->assertEquals(80, $selector['img']);
     }
@@ -42,7 +45,8 @@ class UnitTest extends TestCase
             format: 
                 - Integer';
 
-        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer()])->extract('<img src="photo.jpg" width="200" height="200" />');
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer()])
+            ->extract('<img src="photo.jpg" width="200" height="200" />');
 
         $this->assertSame('integer', gettype($selector['width']));
         $this->assertSame(1000, $selector['width'] * 5);
@@ -66,7 +70,8 @@ class UnitTest extends TestCase
                 - Decimal
                 - Integer';
 
-        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer(), new Decimal()])->extract('<img src="photo.jpg" width="200" height="200" />');
+        $selector = DOMSelector::fromYamlString($yaml_string, [new Integer(), new Decimal()])
+            ->extract('<img src="photo.jpg" width="200" height="200" />');
 
         $this->assertSame('double', gettype($selector['width']));
         $this->assertSame(200.00, $selector['width']);
@@ -86,7 +91,8 @@ class UnitTest extends TestCase
             css: "ul"
             type: Text';
 
-        $selector = DOMSelector::fromYamlString($yaml_string)->extract('<ul><li><strong>STRONG!</strong></li></ul>');
+        $selector = DOMSelector::fromYamlString($yaml_string)
+            ->extract('<ul><li><strong>STRONG!</strong></li></ul>');
 
         $this->assertEquals('<strong>STRONG!</strong>', $selector['content']);
         $this->assertEquals('STRONG!', $selector['text']);
@@ -99,7 +105,8 @@ class UnitTest extends TestCase
             css: "img"
             type: Image';
 
-        $selector = DOMSelector::fromYamlString($yaml_string)->extract('<img src="photo.jpg" width="80" height="80" />');
+        $selector = DOMSelector::fromYamlString($yaml_string)
+            ->extract('<img src="photo.jpg" width="80" height="80" />');
 
         $this->assertEquals('photo.jpg', $selector['img']);
     }
@@ -114,7 +121,8 @@ class UnitTest extends TestCase
             css: "a"
             type: Text';
 
-        $selector = DOMSelector::fromYamlString($yaml_string)->extract('<div><a href="https://example.com/">Click Here!</a> </div>');
+        $selector = DOMSelector::fromYamlString($yaml_string)
+            ->extract('<div><a href="https://example.com/">Click Here!</a> </div>');
 
         $this->assertEquals('https://example.com/', $selector['link']);
         $this->assertEquals('Click Here!', $selector['text']);
@@ -149,7 +157,8 @@ class UnitTest extends TestCase
         content:
             css: "div"';
 
-        $selector = DOMSelector::fromYamlString($yaml_string)->extract('<div><h1><a href="https://example.com/">Click Here!</a></h1></div>');
+        $selector = DOMSelector::fromYamlString($yaml_string)
+            ->extract('<div><h1><a href="https://example.com/">Click Here!</a></h1></div>');
 
         $this->assertEquals('Click Here!', $selector['content']);
     }
@@ -168,7 +177,8 @@ class UnitTest extends TestCase
                     css: "span"
                     type: Text';
 
-        $selector = DOMSelector::fromYamlString($yaml_string)->extract('<div class="items"><p>key</p><span>value</span></div>');
+        $selector = DOMSelector::fromYamlString($yaml_string)
+            ->extract('<div class="items"><p>key</p><span>value</span></div>');
 
         $this->assertEquals([
             'items' => [
@@ -185,7 +195,8 @@ class UnitTest extends TestCase
             css: "ul.items li"
             multiple: True';
 
-        $selector = DOMSelector::fromYamlString($yaml_string)->extract('<ul class="items"><li>One</li><li>Two</li><li>Three</li></ul>');
+        $selector = DOMSelector::fromYamlString($yaml_string)
+            ->extract('<ul class="items"><li>One</li><li>Two</li><li>Three</li></ul>');
 
         $this->assertEquals([
             'items' => [

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DOMSelector;
 
 use DOMSelector\Contracts\FormatterInterface;
+use Exception;
 use PHPHtmlParser\Dom;
 
 /**
@@ -25,10 +26,10 @@ class DOMSelector
     /**
      * DOMSelector constructor.
      *
-     * @param $config
+     * @param array $config
      * @param array $formatters
      */
-    public function __construct($config, array $formatters = [])
+    public function __construct(array $config, array $formatters = [])
     {
         $this->config = $config;
 
@@ -48,7 +49,7 @@ class DOMSelector
     {
         $config = \yaml_parse($yaml_string);
 
-        return new static($config, $formatters);
+        return new DOMSelector($config, $formatters);
     }
 
     /**
@@ -58,7 +59,7 @@ class DOMSelector
     {
         $config = \yaml_parse_file($yaml_file);
 
-        return new static($config, $formatters);
+        return new DOMSelector($config, $formatters);
     }
 
     /**
@@ -94,15 +95,18 @@ class DOMSelector
     /**
      * Extract config items from HTML.
      *
-     * @throws
-     *
+     * @param string $html
      * @return array
      */
     public function extract(string $html): array
     {
         $dom = new Dom();
 
-        $dom->loadStr($html);
+        try {
+            $dom->loadStr($html);
+        } catch (Exception $exception) {
+            return [];
+        }
 
         $fields_data = [];
 
@@ -125,7 +129,7 @@ class DOMSelector
     {
         try {
             $elements = $dom->find($field_config['css']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $elements = [];
         }
 
@@ -133,7 +137,11 @@ class DOMSelector
             return false;
         }
 
-        if (!isset($field_config['type']) || ! in_array($field_config['type'], ['Attribute', 'Html', 'Image', 'Link', 'Text'])) {
+        $types = [
+            'Attribute', 'Html', 'Image', 'Link', 'Text'
+        ];
+
+        if (!isset($field_config['type']) || !in_array($field_config['type'], $types)) {
             $item_type = 'Text';
         } else {
             $item_type = $field_config['type'];
@@ -175,13 +183,13 @@ class DOMSelector
     /**
      * Extract field.
      *
-     * @param $element
-     * @param $item_type
+     * @param mixed $element
+     * @param string $item_type
      * @param mixed $attribute
-     *
+     * @param array $formatters
      * @return false|mixed|string
      */
-    public function extractField($element, $item_type, $attribute = false, array $formatters = [])
+    public function extractField($element, string $item_type, $attribute = false, array $formatters = [])
     {
         switch ($item_type) {
             case 'Attribute':
@@ -216,12 +224,12 @@ class DOMSelector
     /**
      * Get child item.
      *
-     * @param $field_config
-     * @param $element
+     * @param array $field_config
+     * @param mixed $element
      *
      * @return array
      */
-    public function getChildItem($field_config, $element): array
+    public function getChildItem(array $field_config, $element): array
     {
         $child_config = $field_config['children'];
         $child_item = [];

@@ -15,6 +15,11 @@
       "DOMSelector\\": "src/DOMSelector"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
   "require": {
     "php": "^7.3|^8.0",
     "ext-yaml": "*",
@@ -22,9 +27,26 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^9.3.3",
-    "friendsofphp/php-cs-fixer": "^3.0"
+    "friendsofphp/php-cs-fixer": "^3.0",
+    "phpstan/phpstan": "^0.12.90",
+    "rector/rector": "^0.11.23"
   },
   "scripts": {
-    "test": "phpunit"
+    "csfixer:test": "php-cs-fixer fix -v --rules=@PSR1 src/",
+    "phpcs:test": "phpcs --standard=PSR12 src/ tests/",
+    "phpstan:test": "phpstan analyse --ansi src/ tests/",
+    "phpunit:test": "phpunit --colors=always",
+    "rector:test": "rector process --ansi",
+    "test": [
+      "@phpstan:test",
+      "@phpcs:test",
+      "@csfixer:test --dry-run",
+      "@rector:test --dry-run",
+      "@phpunit:test"
+    ],
+    "fix": [
+      "@csfixer:test",
+      "@rector:test"
+    ]
   }
 }
