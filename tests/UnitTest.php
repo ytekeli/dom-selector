@@ -9,15 +9,16 @@ use DOMSelector\Formatters\Decimal;
 use DOMSelector\Formatters\Integer;
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class UnitTest extends TestCase
 {
@@ -52,7 +53,7 @@ class UnitTest extends TestCase
     public function testExtractFromFileException()
     {
         $selector = new DOMSelector([]);
-        
+
         $this->expectException(Exception::class);
 
         $selector->extractFromFile('this-file-doesnt-exists.html');
@@ -60,25 +61,29 @@ class UnitTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function testExtractFromUrl()
     {
-        $streamMock = Mockery::mock(\Psr\Http\Message\StreamInterface::class);
+        $streamMock = Mockery::mock(StreamInterface::class);
+        /** @phpstan-ignore-next-line */
         $streamMock
             ->shouldReceive('getContents')
             ->once()
             ->andReturn(\file_get_contents('tests/data/files/basic.html'));
-        $responseMock = Mockery::mock(\Psr\Http\Message\ResponseInterface::class);
+        $responseMock = Mockery::mock(ResponseInterface::class);
+        /** @phpstan-ignore-next-line */
         $responseMock
             ->shouldReceive('getBody')
             ->once()
             ->andReturn($streamMock);
-        $clientMock = Mockery::mock(\Psr\Http\Client\ClientInterface::class);
+        $clientMock = Mockery::mock(ClientInterface::class);
+        /** @phpstan-ignore-next-line */
         $clientMock
             ->shouldReceive('sendRequest')
             ->once()
             ->andReturn($responseMock);
-        
+
         $selector = new DOMSelector([
             'h1' => [
                 'css' => 'div.jumbotron h1',
@@ -97,7 +102,7 @@ class UnitTest extends TestCase
 
         $handlerStack = HandlerStack::create($mock);
         $client = new Client(['handler' => $handlerStack]);
-        
+
         $this->expectException(Exception::class);
 
         $selector = new DOMSelector([]);

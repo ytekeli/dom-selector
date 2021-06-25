@@ -145,12 +145,12 @@ class DOMSelector
      * Extract config items from url.
      *
      * @param string $url
-     * @param ClientInterface|null $client
+     * @param ClientInterface|null|mixed $client
      *
      * @return array
      * @throws Exception|ClientExceptionInterface
      */
-    public function extractFromUrl(string $url, ?ClientInterface $client = null): array
+    public function extractFromUrl(string $url, $client = null): array
     {
         try {
             $this->dom->loadFromUrl($url, null, $client);
