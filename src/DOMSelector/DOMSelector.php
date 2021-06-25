@@ -32,7 +32,7 @@ class DOMSelector
     {
         $this->config = $config;
 
-        if (!empty($formatters)) {
+        if (! empty($formatters)) {
             foreach ($formatters as $formatter) {
                 if ($formatter instanceof FormatterInterface) {
                     $this->formatters[$formatter->getName()] = $formatter;
@@ -84,8 +84,6 @@ class DOMSelector
     /**
      * Get specific formatter.
      *
-     * @param string $formatter
-     *
      * @return false|mixed|FormatterInterface
      */
     public function getFormatter(string $formatter)
@@ -95,8 +93,6 @@ class DOMSelector
 
     /**
      * Extract config items from HTML.
-     *
-     * @param string $html
      *
      * @throws
      *
@@ -123,22 +119,21 @@ class DOMSelector
      * @param array     $field_config
      * @param Dom|mixed $dom
      *
-     * @return array|string
+     * @return array|string|bool
      */
     public function extractSelector(array $field_config, $dom)
     {
-        $elements = [];
-
         try {
             $elements = $dom->find($field_config['css']);
         } catch (\Exception $e) {
+            $elements = [];
         }
 
         if (count($elements) < 1) {
             return false;
         }
 
-        if (!isset($field_config['type']) || !in_array($field_config['type'], ['Attribute', 'Html', 'Image', 'Link', 'Text'])) {
+        if (! isset($field_config['type']) || ! in_array($field_config['type'], ['Attribute', 'Html', 'Image', 'Link', 'Text'])) {
             $item_type = 'Text';
         } else {
             $item_type = $field_config['type'];
@@ -153,7 +148,7 @@ class DOMSelector
                 $formatters = [];
 
                 if (isset($field_config['format'])) {
-                    if (!is_array($field_config['format'])) {
+                    if (! is_array($field_config['format'])) {
                         $field_config['format'] = [$field_config['format']];
                     }
 
@@ -188,21 +183,27 @@ class DOMSelector
      */
     public function extractField($element, $item_type, $attribute = false, array $formatters = [])
     {
-        $content = false;
-
-        if ($item_type == 'Attribute') {
-            $content = $element->getAttribute($attribute);
-        } elseif ($item_type == 'Html') {
-            $content = $element->innerHtml;
-        } elseif ($item_type == 'Image') {
-            $content = $element->getAttribute('src');
-        } elseif ($item_type == 'Link') {
-            $content = $element->getAttribute('href');
-        } elseif ($item_type == 'Text') {
-            $content = trim(strip_tags($element->innerHtml));
+        switch ($item_type) {
+            case 'Attribute':
+                $content = $element->getAttribute($attribute);
+                break;
+            case 'Html':
+                $content = $element->innerHtml;
+                break;
+            case 'Image':
+                $content = $element->getAttribute('src');
+                break;
+            case 'Link':
+                $content = $element->getAttribute('href');
+                break;
+            case 'Text':
+                $content = trim(strip_tags($element->innerHtml));
+                break;
+            default:
+                $content = false;
         }
 
-        if (!empty($formatters)) {
+        if (! empty($formatters) && $content) {
             /** @var FormatterInterface $formatter */
             foreach ($formatters as $formatter) {
                 $content = $formatter->format($content);

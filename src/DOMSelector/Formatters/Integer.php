@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DOMSelector\Formatters;
 
 use DOMSelector\Contracts\FormatterInterface;
@@ -10,8 +12,6 @@ class Integer implements FormatterInterface
      * Formatting text to integer.
      *
      * @param mixed $value
-     *
-     * @return int
      */
     public function format($value): int
     {
@@ -20,8 +20,6 @@ class Integer implements FormatterInterface
 
     /**
      * Get formatter name.
-     *
-     * @return string
      */
     public function getName(): string
     {
