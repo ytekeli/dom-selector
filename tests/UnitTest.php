@@ -7,7 +7,17 @@ namespace Tests;
 use DOMSelector\DOMSelector;
 use DOMSelector\Formatters\Decimal;
 use DOMSelector\Formatters\Integer;
+use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Exception\RequestException;
+use Mockery;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class UnitTest extends TestCase
 {
@@ -19,6 +29,79 @@ class UnitTest extends TestCase
         $this->assertInstanceOf(DOMSelector::class, $selector1);
         $this->assertInstanceOf(DOMSelector::class, $selector2);
         $this->assertSame($selector1->getConfig(), $selector2->getConfig());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testExtractFromFile()
+    {
+        $selector = new DOMSelector([
+            'h1' => [
+                'css' => 'div.jumbotron h1',
+                'type' => 'Text',
+            ]
+        ]);
+
+        $this->assertSame('My First Bootstrap Page', $selector->extractFromFile('tests/data/files/basic.html')['h1']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testExtractFromFileException()
+    {
+        $selector = new DOMSelector([]);
+        
+        $this->expectException(Exception::class);
+
+        $selector->extractFromFile('this-file-doesnt-exists.html');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testExtractFromUrl()
+    {
+        $streamMock = Mockery::mock(\Psr\Http\Message\StreamInterface::class);
+        $streamMock
+            ->shouldReceive('getContents')
+            ->once()
+            ->andReturn(\file_get_contents('tests/data/files/basic.html'));
+        $responseMock = Mockery::mock(\Psr\Http\Message\ResponseInterface::class);
+        $responseMock
+            ->shouldReceive('getBody')
+            ->once()
+            ->andReturn($streamMock);
+        $clientMock = Mockery::mock(\Psr\Http\Client\ClientInterface::class);
+        $clientMock
+            ->shouldReceive('sendRequest')
+            ->once()
+            ->andReturn($responseMock);
+        
+        $selector = new DOMSelector([
+            'h1' => [
+                'css' => 'div.jumbotron h1',
+                'type' => 'Text',
+            ]
+        ]);
+        $extracted = $selector->extractFromUrl('https://example.com/', $clientMock);
+        $this->assertSame('My First Bootstrap Page', $extracted['h1']);
+    }
+
+    public function testExtractFromUrlException()
+    {
+        $mock = new MockHandler([
+            new RequestException('Error Communicating with Server', new Request('GET', 'test')),
+        ]);
+
+        $handlerStack = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handlerStack]);
+        
+        $this->expectException(Exception::class);
+
+        $selector = new DOMSelector([]);
+        $selector->extractFromUrl('https://example.com/', $client);
     }
 
     public function testTypeAttribute()
