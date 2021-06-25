@@ -9,10 +9,10 @@ use DOMSelector\Formatters\Decimal;
 use DOMSelector\Formatters\Integer;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Exception\RequestException;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -39,9 +39,9 @@ class UnitTest extends TestCase
     {
         $selector = new DOMSelector([
             'h1' => [
-                'css' => 'div.jumbotron h1',
+                'css'  => 'div.jumbotron h1',
                 'type' => 'Text',
-            ]
+            ],
         ]);
 
         $this->assertSame('My First Bootstrap Page', $selector->extractFromFile('tests/data/files/basic.html')['h1']);
@@ -86,9 +86,9 @@ class UnitTest extends TestCase
 
         $selector = new DOMSelector([
             'h1' => [
-                'css' => 'div.jumbotron h1',
+                'css'  => 'div.jumbotron h1',
                 'type' => 'Text',
-            ]
+            ],
         ]);
         $extracted = $selector->extractFromUrl('https://example.com/', $clientMock);
         $this->assertSame('My First Bootstrap Page', $extracted['h1']);
