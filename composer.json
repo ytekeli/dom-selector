@@ -35,6 +35,7 @@
     "csfixer:test": "php-cs-fixer fix -v --rules=@PSR1 src/",
     "phpcs:test": "phpcs --standard=PSR12 src/ tests/",
     "phpstan:test": "phpstan analyse --ansi src/ tests/",
+    "phpunit:coverage": "phpunit --coverage-html .coverage --coverage-text",
     "phpunit:test": "phpunit --colors=always",
     "rector:test": "rector process --ansi",
     "test": [
