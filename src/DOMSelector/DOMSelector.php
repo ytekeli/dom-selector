@@ -127,8 +127,9 @@ class DOMSelector
      *
      * @param string $file
      *
-     * @return array
      * @throws Exception
+     *
+     * @return array
      */
     public function extractFromFile(string $file): array
     {
@@ -144,11 +145,12 @@ class DOMSelector
     /**
      * Extract config items from url.
      *
-     * @param string $url
+     * @param string                     $url
      * @param ClientInterface|null|mixed $client
      *
-     * @return array
      * @throws Exception|ClientExceptionInterface
+     *
+     * @return array
      */
     public function extractFromUrl(string $url, $client = null): array
     {
