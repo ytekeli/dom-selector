@@ -7,6 +7,8 @@ namespace DOMSelector;
 use DOMSelector\Contracts\FormatterInterface;
 use Exception;
 use PHPHtmlParser\Dom;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 
 /**
  * Class DOMSelector.
@@ -24,6 +26,11 @@ class DOMSelector
     private $formatters = [];
 
     /**
+     * @var Dom
+     */
+    private $dom;
+
+    /**
      * DOMSelector constructor.
      *
      * @param array $config
@@ -32,6 +39,7 @@ class DOMSelector
     public function __construct(array $config, array $formatters = [])
     {
         $this->config = $config;
+        $this->dom = new Dom();
 
         if (!empty($formatters)) {
             foreach ($formatters as $formatter) {
@@ -93,24 +101,66 @@ class DOMSelector
     }
 
     /**
-     * Extract config items from HTML.
+     * Extract config items from HTML string.
      *
-     * @param string $html
+     * @param string|Dom $html
      *
      * @return array
      */
-    public function extract(string $html): array
+    public function extract($html): array
     {
-        $dom = new Dom();
-        $dom->loadStr($html);
+        if (!$html instanceof Dom) {
+            $this->dom->loadStr($html);
+        }
 
         $fields_data = [];
 
         foreach ($this->config as $field_name => $field_config) {
-            $fields_data[$field_name] = $this->extractSelector($field_config, $dom);
+            $fields_data[$field_name] = $this->extractSelector($field_config, $this->dom);
         }
 
         return $fields_data;
+    }
+
+    /**
+     * Extract config items from HTML file.
+     *
+     * @param string $file
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public function extractFromFile(string $file): array
+    {
+        try {
+            $this->dom->loadFromFile($file);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+
+        return $this->extract($this->dom);
+    }
+
+    /**
+     * Extract config items from url.
+     *
+     * @param string                     $url
+     * @param ClientInterface|null|mixed $client
+     *
+     * @throws Exception|ClientExceptionInterface
+     *
+     * @return array
+     */
+    public function extractFromUrl(string $url, $client = null): array
+    {
+        try {
+            $this->dom->loadFromUrl($url, null, $client);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+
+        return $this->extract($this->dom);
     }
 
     /**
