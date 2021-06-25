@@ -32,7 +32,7 @@ class DOMSelector
     {
         $this->config = $config;
 
-        if ($formatters) {
+        if (! empty($formatters)) {
             foreach ($formatters as $formatter) {
                 if ($formatter instanceof FormatterInterface) {
                     $this->formatters[$formatter->getName()] = $formatter;
@@ -202,7 +202,7 @@ class DOMSelector
             $content = trim(strip_tags($element->innerHtml));
         }
 
-        if ($formatters) {
+        if (! empty($formatters)) {
             /** @var FormatterInterface $formatter */
             foreach ($formatters as $formatter) {
                 $content = $formatter->format($content);
