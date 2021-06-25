@@ -54,6 +54,7 @@
     "rector:test": "Run the rector tests.",
     "csfixer:test": "Run the PhpCsFixer tests.",
     "phpstan:test": "Run the phpstan tests.",
+    "phpunit:coverage": "Run the phpunit coverage.",
     "phpunit:test": "Run the phpunit tests.",
     "test": "Run all tests including phpstan, phpunit and phpcs.",
     "fix": "Run cs and rector fixers."
