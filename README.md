@@ -1,9 +1,10 @@
 DOM Selector
 ==========================
-
+[![Latest Version](https://img.shields.io/packagist/v/ytekeli/dom-selector)](https://packagist.org/packages/ytekeli/dom-selector)
 [![Build Status](https://scrutinizer-ci.com/g/ytekeli/dom-selector/badges/build.png?b=master)](https://travis-ci.com/ytekeli/dom-selector)
 [![Code Coverage](https://scrutinizer-ci.com/g/ytekeli/dom-selector/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ytekeli/dom-selector/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ytekeli/dom-selector/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ytekeli/dom-selector/?branch=master)
+[![Software License](https://img.shields.io/github/license/ytekeli/dom-selector)](https://github.com/ytekeli/dom-selector/blob/master/LICENSE.md)
 
 An HTML DOM selector and extractor with using YAML config.
 * Free software: MIT license
