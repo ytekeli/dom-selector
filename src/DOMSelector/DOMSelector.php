@@ -96,6 +96,7 @@ class DOMSelector
      * Extract config items from HTML.
      *
      * @param string $html
+     *
      * @return array
      */
     public function extract(string $html): array
@@ -138,7 +139,7 @@ class DOMSelector
         }
 
         $types = [
-            'Attribute', 'Html', 'Image', 'Link', 'Text'
+            'Attribute', 'Html', 'Image', 'Link', 'Text',
         ];
 
         if (!isset($field_config['type']) || !in_array($field_config['type'], $types)) {
@@ -183,10 +184,11 @@ class DOMSelector
     /**
      * Extract field.
      *
-     * @param mixed $element
+     * @param mixed  $element
      * @param string $item_type
-     * @param mixed $attribute
-     * @param array $formatters
+     * @param mixed  $attribute
+     * @param array  $formatters
+     *
      * @return false|mixed|string
      */
     public function extractField($element, string $item_type, $attribute = false, array $formatters = [])
