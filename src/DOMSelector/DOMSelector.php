@@ -32,7 +32,7 @@ class DOMSelector
     {
         $this->config = $config;
 
-        if (! empty($formatters)) {
+        if (!empty($formatters)) {
             foreach ($formatters as $formatter) {
                 if ($formatter instanceof FormatterInterface) {
                     $this->formatters[$formatter->getName()] = $formatter;
@@ -133,7 +133,7 @@ class DOMSelector
             return false;
         }
 
-        if (! isset($field_config['type']) || ! in_array($field_config['type'], ['Attribute', 'Html', 'Image', 'Link', 'Text'])) {
+        if (!isset($field_config['type']) || ! in_array($field_config['type'], ['Attribute', 'Html', 'Image', 'Link', 'Text'])) {
             $item_type = 'Text';
         } else {
             $item_type = $field_config['type'];
@@ -148,7 +148,7 @@ class DOMSelector
                 $formatters = [];
 
                 if (isset($field_config['format'])) {
-                    if (! is_array($field_config['format'])) {
+                    if (!is_array($field_config['format'])) {
                         $field_config['format'] = [$field_config['format']];
                     }
 
@@ -203,7 +203,7 @@ class DOMSelector
                 $content = false;
         }
 
-        if (! empty($formatters) && $content) {
+        if (!empty($formatters) && $content) {
             /** @var FormatterInterface $formatter */
             foreach ($formatters as $formatter) {
                 $content = $formatter->format($content);
