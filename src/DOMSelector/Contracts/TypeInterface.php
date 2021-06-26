@@ -11,8 +11,9 @@ interface TypeInterface
     /**
      * Get type content.
      *
-     * @param HtmlNode $element
+     * @param HtmlNode    $element
      * @param string|null $attribute
+     *
      * @return mixed
      */
     public static function getContent(HtmlNode $element, string $attribute = null);

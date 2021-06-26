@@ -27,14 +27,14 @@ class DOMSelector
     private $formatters = [];
 
     /**
-     * Selector DOM class
+     * Selector DOM class.
      *
      * @var Dom
      */
     private $dom;
 
     /**
-     * Type Handler Class
+     * Type Handler Class.
      *
      * @var TypeProvider
      */
@@ -115,6 +115,7 @@ class DOMSelector
      * Get formatters from config.
      *
      * @param string|array $items
+     *
      * @return array
      */
     protected function getFormettersFromConfig($items): array
