@@ -14,6 +14,6 @@ class AttributeType implements TypeInterface
      */
     public static function getContent(HtmlNode $element, string $attribute = null)
     {
-        return $element->getAttribute($attribute);
+        return is_null($attribute) ? null : $element->getAttribute($attribute);
     }
 }
