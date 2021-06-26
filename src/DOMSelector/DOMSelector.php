@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DOMSelector;
 
 use DOMSelector\Contracts\FormatterInterface;
+use DOMSelector\Providers\TypeProvider;
 use Exception;
 use PHPHtmlParser\Dom;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -26,9 +27,18 @@ class DOMSelector
     private $formatters = [];
 
     /**
+     * Selector DOM class
+     *
      * @var Dom
      */
     private $dom;
+
+    /**
+     * Type Handler Class
+     *
+     * @var TypeProvider
+     */
+    protected $typeProvider;
 
     /**
      * DOMSelector constructor.
@@ -40,6 +50,7 @@ class DOMSelector
     {
         $this->config = $config;
         $this->dom = new Dom();
+        $this->typeProvider = new TypeProvider();
 
         if (!empty($formatters)) {
             foreach ($formatters as $formatter) {
@@ -98,6 +109,30 @@ class DOMSelector
     public function getFormatter(string $formatter)
     {
         return $this->formatters[$formatter] ?? false;
+    }
+
+    /**
+     * Get formatters from config.
+     *
+     * @param string|array $items
+     * @return array
+     */
+    protected function getFormettersFromConfig($items): array
+    {
+        $formatters = [];
+
+        if (!is_array($items)) {
+            $items = [$items];
+        }
+
+        foreach ($items as $item) {
+            $formatter = $this->getFormatter($item);
+            if ($formatter) {
+                $formatters[$item] = $formatter;
+            }
+        }
+
+        return $formatters;
     }
 
     /**
@@ -171,7 +206,7 @@ class DOMSelector
      *
      * @return array|string|bool
      */
-    public function extractSelector(array $field_config, $dom)
+    protected function extractSelector(array $field_config, $dom)
     {
         try {
             $elements = $dom->find($field_config['css']);
@@ -179,19 +214,7 @@ class DOMSelector
             $elements = [];
         }
 
-        if (count($elements) < 1) {
-            return false;
-        }
-
-        $types = [
-            'Attribute', 'Html', 'Image', 'Link', 'Text',
-        ];
-
-        if (!isset($field_config['type']) || !in_array($field_config['type'], $types)) {
-            $item_type = 'Text';
-        } else {
-            $item_type = $field_config['type'];
-        }
+        $item_type = $this->typeProvider->getType($field_config['type'] ?? '') ? $field_config['type'] : 'Text';
 
         $values = [];
 
@@ -199,21 +222,9 @@ class DOMSelector
             if (isset($field_config['children'])) {
                 $value = $this->getChildItem($field_config, $element);
             } else {
-                $formatters = [];
+                $formatters = $this->getFormettersFromConfig($field_config['format'] ?? []);
 
-                if (isset($field_config['format'])) {
-                    if (!is_array($field_config['format'])) {
-                        $field_config['format'] = [$field_config['format']];
-                    }
-
-                    foreach ($field_config['format'] as $f) {
-                        if ($formatter = $this->getFormatter($f)) {
-                            $formatters[$f] = $formatter;
-                        }
-                    }
-                }
-
-                $value = $this->extractField($element, $item_type, $field_config['attribute'] ?? false, $formatters);
+                $value = $this->extractField($element, $item_type, $field_config['attribute'] ?? null, $formatters);
             }
 
             if (isset($field_config['multiple']) && $field_config['multiple'] === true) {
@@ -236,25 +247,14 @@ class DOMSelector
      *
      * @return false|mixed|string
      */
-    public function extractField($element, string $item_type, $attribute = false, array $formatters = [])
+    protected function extractField($element, string $item_type, $attribute = null, array $formatters = [])
     {
-        switch ($item_type) {
-            case 'Attribute':
-                $content = $element->getAttribute($attribute);
-                break;
-            case 'Html':
-                $content = $element->innerHtml;
-                break;
-            case 'Image':
-                $content = $element->getAttribute('src');
-                break;
-            case 'Link':
-                $content = $element->getAttribute('href');
-                break;
-            case 'Text':
-            default:
-                $content = trim(strip_tags($element->innerHtml));
-                break;
+        $content = false;
+
+        $type = $this->typeProvider->getType($item_type);
+
+        if ($type) {
+            $content = $type->getContent($element, $attribute);
         }
 
         if (!empty($formatters) && $content) {

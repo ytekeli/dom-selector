@@ -7,6 +7,7 @@ namespace Tests;
 use DOMSelector\DOMSelector;
 use DOMSelector\Formatters\Decimal;
 use DOMSelector\Formatters\Integer;
+use DOMSelector\Providers\TypeProvider;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -236,7 +237,7 @@ class UnitTest extends TestCase
 
         $selector = DOMSelector::fromYamlString($yaml_string)->extract('<div></div>');
 
-        $this->assertEquals(false, $selector['content']);
+        $this->assertEquals([], $selector['content']);
     }
 
     public function testDefaultItemType()
@@ -373,5 +374,20 @@ class UnitTest extends TestCase
 
         $this->assertSame(1.00, $selector['decimal']);
         $this->assertSame('double', gettype($selector['decimal']));
+    }
+
+    public function testTypeProviderTypes()
+    {
+        $typeProvider = new TypeProvider();
+
+        $this->assertTrue(count($typeProvider->types()) > 0);
+    }
+
+    public function testTypeProviderInvalidTypeException()
+    {
+        $this->expectExceptionObject(new Exception('TypeIsNotExists not found!'));
+
+        $typeProvider = new TypeProvider();
+        $typeProvider->add('TypeIsNotExists');
     }
 }
