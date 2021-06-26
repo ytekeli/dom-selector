@@ -9,6 +9,11 @@ DOM Selector
 An HTML DOM selector and extractor with using YAML config.
 * Free software: MIT license
 
+Requirements
+------------
+- PHP ^7.3 | ^8.0
+- ext-yaml
+
 Install
 -------
 Install the latest version using composer.
