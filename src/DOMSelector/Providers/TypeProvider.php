@@ -13,9 +13,7 @@ use DOMSelector\Types\LinkType;
 use DOMSelector\Types\TextType;
 
 /**
- * Class TypeProvider
- *
- * @package DOMSelector\Handlers
+ * Class TypeProvider.
  */
 class TypeProvider
 {
@@ -75,6 +73,7 @@ class TypeProvider
      * Add a new type to collection.
      *
      * @param string $type
+     *
      * @throws InvalidTypeException
      *
      * @return void
@@ -82,13 +81,13 @@ class TypeProvider
     public function add(string $type): void
     {
         if (!class_exists($type)) {
-            throw new InvalidTypeException($type . ' not found!');
+            throw new InvalidTypeException($type.' not found!');
         }
 
         $typeClass = new $type();
 
         if (!$typeClass instanceof TypeInterface) {
-            throw new InvalidTypeException($type . ' is not instance of TypeInterface.');
+            throw new InvalidTypeException($type.' is not instance of TypeInterface.');
         }
 
         $names = explode('\\', $type);
@@ -99,10 +98,11 @@ class TypeProvider
      * Get the specific type.
      *
      * @param string $type
+     *
      * @return TypeInterface|false
      */
     public function getType(string $type)
     {
-        return $this->types[$type . 'Type'] ?? false;
+        return $this->types[$type.'Type'] ?? false;
     }
 }
